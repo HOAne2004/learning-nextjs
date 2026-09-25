@@ -23,7 +23,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <header><li className="font-bold text-2xl">Đây là phần header</li></header>
+      {/* Phần render động */}
       <body className="min-h-full flex flex-col">{children}</body>
+      <footer className="text-blue-500">Đây là footer</footer>
     </html>
   );
 }
