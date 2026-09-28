@@ -1,4 +1,18 @@
+'use client'
+
+import { useEffect } from "react";
+
 export default function DataTable() {
+
+    useEffect(() =>{
+        const fetchData = async() =>{
+            const res = await fetch("http://localhost:8000/blogs");
+            const data = await res.json();
+            console.log(">>> check res: ", data);
+        }
+        fetchData();
+    }, []);
+
     const data = [
         { id: 1, firstName: "Mark", lastName: "Otto", username: "@mdo" },
         { id: 2, firstName: "Jacob", lastName: "Thornton", username: "@fat" },
