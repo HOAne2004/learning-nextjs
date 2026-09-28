@@ -1,9 +1,15 @@
 'use client'
 
-import { useEffect } from "react";
+//import { useEffect } from "react";
 import useSWR from 'swr';
+import Modal from './create.modal';
+import { useState } from 'react';
+import CreateBlogForm from './create.form';
 
 export default function DataTable() {
+
+    const [show, setShow] = useState(false);
+
     //Cách  tự viết logic fetch bằng useEffect thường dẫn đến việc lặp lại code, 
     // quản lý trạng thái thủ công và dễ gặp lỗi. 
     // useEffect(() =>{
@@ -35,14 +41,17 @@ export default function DataTable() {
     if (error) return (<div className="text-red-700 bg-red-200 text-center p-4">Đã có lỗi xảy ra.</div>);
     if (isLoading) return (<div className="text-green-700, bg-green-200 text-center p-4">Đang tải...</div>)
 
-    console.log(">>> check res: ", data);
+    //console.log(">>> check res: ", data);
 
-    const blogs: IBlog[] = data;
+    const blogs: IBlog[] = data?.sort((a: any, b: any) => b.id - a.id);
+
+
     return (
         <div className="overflow-x-auto">
-            <div className="flex justify-between m-2">
-                <span className="text-2xl font-bold">Table Blogs</span>
-                <button className="btn bg-green-500 text-white hover:bg-green-600">Add new</button>
+            <div className="flex justify-between m-2 container">
+                <span className="text-2xl font-bold">Table Blogs {data.length}</span>
+                <button className="btn bg-green-500 text-white hover:bg-green-600"
+                    onClick={() => { console.log('clicked'); setShow(true) }}>Add new</button>
             </div>
             <table className="container border-collapse">
                 {/* Header */}
@@ -70,6 +79,14 @@ export default function DataTable() {
                     ))}
                 </tbody>
             </table>
+            <Modal
+                show={show}
+                onHide={() => setShow(false)}
+                title='Create Modal'
+
+                backdrop='static'>
+                <CreateBlogForm onSuccess={() => setShow(false)} />
+            </Modal>
         </div>
     );
 }
