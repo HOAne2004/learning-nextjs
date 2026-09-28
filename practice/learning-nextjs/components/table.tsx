@@ -1,45 +1,71 @@
 'use client'
 
 import { useEffect } from "react";
+import useSWR from 'swr';
 
 export default function DataTable() {
+    //Cách  tự viết logic fetch bằng useEffect thường dẫn đến việc lặp lại code, 
+    // quản lý trạng thái thủ công và dễ gặp lỗi. 
+    // useEffect(() =>{
+    //     const fetchData = async() =>{
+    //         const res = await fetch("http://localhost:8000/blogs");
+    //         const data = await res.json();
+    //         console.log(">>> check res: ", data);
+    //     }
+    //     fetchData();
+    // }, []);
 
-    useEffect(() =>{
-        const fetchData = async() =>{
-            const res = await fetch("http://localhost:8000/blogs");
-            const data = await res.json();
-            console.log(">>> check res: ", data);
+    // SWR:
+    //- Tự động Cache.
+    //- Tự fetch dữ liệu khi người dùng quay lại tab hoặc khi có kết nối mạng trở lại
+    // - Nếu nhiều components cùng gọi 1 API, chỉ thực hiện 1 request duy nhất và chia sẻ kết quả cho tất cả.
+    const fetcher = (url: string) => fetch(url)
+        .then((res) => res.json());
+
+    const { data, error, isLoading } = useSWR(
+        "http://localhost:8000/blogs",
+        fetcher,
+        {
+            revalidateIfStale: false,
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false
         }
-        fetchData();
-    }, []);
 
-    const data = [
-        { id: 1, firstName: "Mark", lastName: "Otto", username: "@mdo" },
-        { id: 2, firstName: "Jacob", lastName: "Thornton", username: "@fat" },
-        { id: 3, firstName: "Jacob", lastName: "Thornton", username: "@fat" },
-    ];
+    );
+    if (error) return (<div className="text-red-700 bg-red-200 text-center p-4">Đã có lỗi xảy ra.</div>);
+    if (isLoading) return (<div className="text-green-700, bg-green-200 text-center p-4">Đang tải...</div>)
 
+    console.log(">>> check res: ", data);
+
+    const blogs: IBlog[] = data;
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse">
+            <div className="flex justify-between m-2">
+                <span className="text-2xl font-bold">Table Blogs</span>
+                <button className="btn bg-green-500 text-white hover:bg-green-600">Add new</button>
+            </div>
+            <table className="container border-collapse">
                 {/* Header */}
                 <thead className="bg-gray-100 border-b border-gray-200">
                     <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">#</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">First Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Last Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Author</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
                     </tr>
                 </thead>
 
                 {/* Body */}
                 <tbody>
-                    {data.map((row) => (
+                    {blogs?.map((row) => (
                         <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
                             <td className="px-4 py-3 text-sm text-gray-700">{row.id}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{row.firstName}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{row.lastName}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{row.username}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700">{row.title}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700">{row.author}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700 flex gap-4">
+                                <button className="btn btn-primary">View</button>
+                                <button className="btn btn-secondary">Edit</button>
+                                <button className="btn btn-danger">Delete</button> </td>
                         </tr>
                     ))}
                 </tbody>

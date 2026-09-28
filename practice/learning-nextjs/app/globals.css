@@ -41,3 +41,65 @@ body {
     @padding-inline: 5rem;
   }
 }
+
+/* ===== Base button ===== */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ===== Biến thể màu ===== */
+@utility btn-primary {
+  background-color: var(--color-blue-500);
+  color: white;
+
+  @variant hover {
+    background-color: var(--color-blue-700);
+  }
+}
+
+@utility btn-secondary {
+  background-color: var(--color-yellow-500);
+  color: white;
+
+  @variant hover {
+    background-color: var(--color-yellow-60f0);
+  }
+}
+
+@utility btn-danger {
+  background-color: var(--color-red-600);
+  color: white;
+
+  @variant hover {
+    background-color: var(--color-red-700);
+  }
+}
+
+@utility btn-outline {
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-700);
+
+  @variant hover {
+    background-color: var(--color-gray-100);
+  }
+}
+
+/* ===== Biến thể kích thước ===== */
+@utility btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+@utility btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
