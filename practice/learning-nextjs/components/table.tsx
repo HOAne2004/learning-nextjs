@@ -5,10 +5,13 @@ import useSWR from 'swr';
 import Modal from './create.modal';
 import { useState } from 'react';
 import CreateBlogForm from './create.form';
+import UpdateBlogForm from './update.form';
 
 export default function DataTable() {
 
-    const [show, setShow] = useState(false);
+    const [blog, setBlog] = useState<IBlog | null>(null);
+    const [showModalCreate, setShowModalCreate] = useState(false);
+    const [showModalUpdate, setShowModalUpdate] = useState(false);
 
     //Cách  tự viết logic fetch bằng useEffect thường dẫn đến việc lặp lại code, 
     // quản lý trạng thái thủ công và dễ gặp lỗi. 
@@ -43,7 +46,7 @@ export default function DataTable() {
 
     //console.log(">>> check res: ", data);
 
-    const blogs: IBlog[] = data?.sort((a: any, b: any) => b.id - a.id);
+    const blogs: IBlog[] = data?.sort((a: IBlog, b: IBlog) => b.id - a.id);
 
 
     return (
@@ -51,7 +54,7 @@ export default function DataTable() {
             <div className="flex justify-between m-2 container">
                 <span className="text-2xl font-bold">Table Blogs {data.length}</span>
                 <button className="btn bg-green-500 text-white hover:bg-green-600"
-                    onClick={() => { console.log('clicked'); setShow(true) }}>Add new</button>
+                    onClick={() => { console.log('clicked'); setShowModalCreate(true) }}>Add new</button>
             </div>
             <table className="container border-collapse">
                 {/* Header */}
@@ -73,20 +76,36 @@ export default function DataTable() {
                             <td className="px-4 py-3 text-sm text-gray-700">{row.author}</td>
                             <td className="px-4 py-3 text-sm text-gray-700 flex gap-4">
                                 <button className="btn btn-primary">View</button>
-                                <button className="btn btn-secondary">Edit</button>
+                                <button className="btn btn-secondary"
+                                    onClick={() => {
+                                        setBlog(row);
+                                        setShowModalUpdate(true);
+                                    }
+                                    }>Edit</button>
                                 <button className="btn btn-danger">Delete</button> </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             <Modal
-                show={show}
-                onHide={() => setShow(false)}
-                title='Create Modal'
+                show={showModalCreate}
+                onHide={() => setShowModalCreate(false)}
+                title='Create A Blog'>
+                <CreateBlogForm onSuccess={() => setShowModalCreate(false)} />
 
-                backdrop='static'>
-                <CreateBlogForm onSuccess={() => setShow(false)} />
             </Modal>
+
+            <Modal
+                show={showModalUpdate}
+                onHide={() => setShowModalUpdate(false)}
+                title='Update A Blog'>
+                {blog && (
+                    <UpdateBlogForm
+                        onSuccess={() => setShowModalUpdate(false)}
+                        blog={blog} />
+                )}
+            </Modal>
+
         </div>
     );
 }

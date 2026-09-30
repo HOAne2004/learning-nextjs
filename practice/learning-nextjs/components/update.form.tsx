@@ -1,16 +1,18 @@
 'use client'
 
 import { useState } from "react"
-import {toast} from 'react-toastify'
-import {mutate} from 'swr'
+import { toast } from 'react-toastify'
+import { mutate } from 'swr'
 
-type Props = { onSuccess?: () => void};
+type Props = {
+    onSuccess?: () => void,
+    blog: IBlog
+};
 
-export default function CreateBlogForm({onSuccess}:Props) {
-    const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
-    const [content, setContent] = useState('');
-
+export default function UpdateBlogForm({ onSuccess, blog }: Props) {
+    const [title, setTitle] = useState(blog.title);
+    const [author, setAuthor] = useState(blog.author);
+    const [content, setContent] = useState(blog.content);
     const [error, setError] = useState('');
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,13 +26,16 @@ export default function CreateBlogForm({onSuccess}:Props) {
             return;
         }
 
+        setError('');
         setIsSubmitting(true);
-        
         const newBlog = { title, author, content };
         try {
-            const res = await fetch('http://localhost:8000/blogs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const res = await fetch(`http://localhost:8000/blogs/${blog.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(newBlog),
             });
             if (!res.ok) throw new Error('Lỗi khi gửi dữ liệu');
@@ -43,8 +48,8 @@ export default function CreateBlogForm({onSuccess}:Props) {
             setAuthor('');
             setContent('');
             setError('');
-            
-            toast.success("Tạo blog thành công.");
+
+            toast.success("Cập nhật blog thành công.");
 
             onSuccess?.();
 
@@ -104,7 +109,7 @@ export default function CreateBlogForm({onSuccess}:Props) {
                 disabled={isSubmitting}
                 className="btn bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 type='submit'
-                >
+            >
                 {isSubmitting ? 'Đang gửi...' : 'Submit'}
             </button>
         </form>
