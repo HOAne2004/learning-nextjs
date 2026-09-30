@@ -1,11 +1,13 @@
 'use client'
 
 //import { useEffect } from "react";
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import Modal from './create.modal';
 import { useState } from 'react';
 import CreateBlogForm from './create.form';
 import UpdateBlogForm from './update.form';
+import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 export default function DataTable() {
 
@@ -48,7 +50,23 @@ export default function DataTable() {
 
     const blogs: IBlog[] = data?.sort((a: IBlog, b: IBlog) => b.id - a.id);
 
-
+    const handleDeleteBlog = (id: number) => {
+        if (confirm(`Do you want to delete this blog id = ${id}?`)) {
+            fetch(`http://localhost:8000/blogs/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-type': 'application/json'
+                },
+            }).then(res => res.json())
+                .then(res => {
+                    if (res) {
+                        toast.success("Delete blog success");
+                        mutate(`http://localhost:8000/blogs`)
+                    }
+                })
+        }
+    }
     return (
         <div className="overflow-x-auto">
             <div className="flex justify-between m-2 container">
@@ -75,14 +93,16 @@ export default function DataTable() {
                             <td className="px-4 py-3 text-sm text-gray-700">{row.title}</td>
                             <td className="px-4 py-3 text-sm text-gray-700">{row.author}</td>
                             <td className="px-4 py-3 text-sm text-gray-700 flex gap-4">
-                                <button className="btn btn-primary">View</button>
+                                <button className="btn btn-primary">
+                                    <Link href={`/blogs/${row.id}`}>View</Link>
+                                </button>
                                 <button className="btn btn-secondary"
                                     onClick={() => {
                                         setBlog(row);
                                         setShowModalUpdate(true);
                                     }
                                     }>Edit</button>
-                                <button className="btn btn-danger">Delete</button> </td>
+                                <button className="btn btn-danger" onClick={() => handleDeleteBlog(row.id)}>Delete</button> </td>
                         </tr>
                     ))}
                 </tbody>

@@ -71,7 +71,7 @@ body {
   color: white;
 
   @variant hover {
-    background-color: var(--color-yellow-60f0);
+    background-color: var(--color-yellow-600);
   }
 }
 

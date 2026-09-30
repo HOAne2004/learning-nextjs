@@ -19,6 +19,11 @@ export default function Navbar() {
                         Patient Management
                     </button>
                 </div>
+                <div>
+                    <button onClick={() => router.push("/blogs")}>
+                        Blogs
+                    </button>
+                </div>
             </div>
         </header>
     );
