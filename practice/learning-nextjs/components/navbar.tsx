@@ -24,6 +24,11 @@ export default function Navbar() {
                         Blogs
                     </button>
                 </div>
+                <div>
+                    <button onClick={() => router.push("/learn")}>
+                        Learn
+                    </button>
+                </div>
             </div>
         </header>
     );
